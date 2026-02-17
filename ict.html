@@ -1,0 +1,2851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SmartLearn</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e0c1a;
+  --surface: #16132a;
+  --surface2: #1e1a35;
+  --surface3: #252040;
+  --border: #2e2850;
+  --border2: #3d3668;
+
+  --primary: #7c5cfc;
+  --primary-light: #9b80ff;
+  --primary-glow: rgba(124,92,252,0.3);
+
+  --yellow: #fbbf24;
+  --yellow-soft: rgba(251,191,36,0.15);
+  --green: #34d399;
+  --green-soft: rgba(52,211,153,0.15);
+  --coral: #fb7185;
+  --coral-soft: rgba(251,113,133,0.15);
+  --blue: #60a5fa;
+  --blue-soft: rgba(96,165,250,0.15);
+  --orange: #fb923c;
+  --orange-soft: rgba(251,146,60,0.15);
+  --pink: #f472b6;
+  --pink-soft: rgba(244,114,182,0.15);
+  --teal: #2dd4bf;
+  --teal-soft: rgba(45,212,191,0.15);
+
+  --text: #f0eeff;
+  --text2: #9d97c8;
+  --text3: #5d5888;
+
+  --r: 14px;
+  --r-sm: 10px;
+  --r-lg: 20px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  overflow: hidden;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+/* ── APP SHELL ── */
+#app {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+  background: var(--bg);
+  box-shadow: 0 0 80px rgba(124,92,252,0.08);
+}
+
+/* ── SCREENS ── */
+.screen {
+  display: none;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+.screen.active { display: flex; }
+
+/* ── SCROLLABLE BODY ── */
+.scroll-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 12px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.topbar-title {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.topbar-logo {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary-light), var(--yellow));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.back-btn {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.15s;
+}
+.back-btn:hover { background: var(--surface3); color: var(--text); }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+  display: flex;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  padding: 4px 0 8px;
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-radius: 12px;
+  margin: 2px 3px;
+}
+
+.nav-icon {
+  font-size: 22px;
+  transition: transform 0.2s;
+}
+
+.nav-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--text3);
+  transition: color 0.15s;
+}
+
+.nav-item.active .nav-icon { transform: scale(1.15); }
+.nav-item.active .nav-label { color: var(--primary-light); }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 24px;
+  border-radius: var(--r);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), #a855f7);
+  color: #fff;
+  box-shadow: 0 4px 20px var(--primary-glow);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px var(--primary-glow); }
+.btn-primary:active { transform: translateY(0); }
+
+.btn-secondary {
+  background: var(--surface2);
+  border: 1.5px solid var(--border2);
+  color: var(--text);
+}
+.btn-secondary:hover { background: var(--surface3); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text2);
+  padding: 10px 16px;
+}
+.btn-ghost:hover { color: var(--text); background: var(--surface2); }
+
+.btn-full { width: 100%; }
+.btn-sm { padding: 8px 16px; font-size: 13px; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 18px;
+}
+
+/* ── BADGE ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ── PILL ── */
+.pill {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text2);
+}
+
+/* ══════════════════════════════
+   SCREEN: WELCOME
+══════════════════════════════ */
+#screen-welcome {
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.welcome-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.25;
+}
+
+.orb1 { width: 300px; height: 300px; background: var(--primary); top: -100px; right: -80px; animation: float1 6s ease-in-out infinite; }
+.orb2 { width: 200px; height: 200px; background: var(--yellow); bottom: 100px; left: -60px; animation: float2 8s ease-in-out infinite; }
+.orb3 { width: 150px; height: 150px; background: var(--teal); top: 40%; right: -40px; animation: float1 7s ease-in-out infinite reverse; }
+
+@keyframes float1 {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-20px) scale(1.05); }
+}
+@keyframes float2 {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(15px); }
+}
+
+.welcome-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px 28px;
+  text-align: center;
+}
+
+.welcome-logo {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 48px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #fff 0%, var(--primary-light) 50%, var(--yellow) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  animation: fadeUp 0.6s ease both;
+}
+
+.welcome-tagline {
+  font-size: 15px;
+  color: var(--text2);
+  margin-bottom: 48px;
+  line-height: 1.6;
+  animation: fadeUp 0.6s ease 0.1s both;
+}
+
+.welcome-features {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 40px;
+  animation: fadeUp 0.6s ease 0.2s both;
+}
+
+.welcome-feature {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  text-align: left;
+}
+
+.wf-icon { font-size: 24px; flex-shrink: 0; }
+.wf-text h4 { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.wf-text p { font-size: 12px; color: var(--text2); line-height: 1.4; }
+
+.welcome-cta {
+  width: 100%;
+  animation: fadeUp 0.6s ease 0.3s both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════
+   SCREEN: PROFILE SETUP
+══════════════════════════════ */
+.setup-content { padding: 24px 20px; }
+
+.setup-title { font-family: 'Fredoka', sans-serif; font-size: 28px; font-weight: 600; margin-bottom: 6px; }
+.setup-subtitle { font-size: 14px; color: var(--text2); margin-bottom: 28px; }
+
+.form-group { margin-bottom: 20px; }
+.form-label { font-size: 13px; font-weight: 700; color: var(--text2); margin-bottom: 8px; display: block; letter-spacing: 0.05em; text-transform: uppercase; }
+
+.form-input {
+  width: 100%;
+  padding: 13px 16px;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.form-input:focus { border-color: var(--primary); }
+.form-input::placeholder { color: var(--text3); }
+
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.avatar-opt {
+  width: 100%;
+  aspect-ratio: 1;
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  border-radius: var(--r);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.avatar-opt:hover { border-color: var(--border2); transform: scale(1.05); }
+.avatar-opt.selected { border-color: var(--primary); background: var(--primary-glow); }
+
+.grade-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.grade-opt {
+  padding: 10px;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--text2);
+}
+.grade-opt:hover { border-color: var(--border2); color: var(--text); }
+.grade-opt.selected { border-color: var(--primary); background: var(--primary-glow); color: var(--primary-light); }
+
+/* ══════════════════════════════
+   SCREEN: QUIZ
+══════════════════════════════ */
+.quiz-header {
+  padding: 16px 20px 12px;
+  flex-shrink: 0;
+}
+
+.quiz-progress-bar {
+  height: 6px;
+  background: var(--surface2);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.quiz-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.quiz-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text3);
+  font-weight: 600;
+}
+
+.quiz-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.quiz-question-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--primary-light);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.quiz-question-text {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 28px;
+  color: var(--text);
+}
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.quiz-opt {
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text2);
+}
+.quiz-opt:hover { border-color: var(--border2); color: var(--text); background: var(--surface2); }
+.quiz-opt.selected { border-color: var(--primary); background: var(--primary-glow); color: var(--primary-light); font-weight: 700; }
+
+.quiz-opt-dot {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--border2);
+  flex-shrink: 0;
+  transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.quiz-opt.selected .quiz-opt-dot {
+  border-color: var(--primary);
+  background: var(--primary);
+}
+.quiz-opt.selected .quiz-opt-dot::after {
+  content: '✓';
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.quiz-footer {
+  padding: 12px 20px 16px;
+  flex-shrink: 0;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+}
+
+/* ══════════════════════════════
+   SCREEN: RESULTS
+══════════════════════════════ */
+.results-hero {
+  padding: 28px 20px 0;
+  text-align: center;
+}
+
+.results-icon { font-size: 56px; margin-bottom: 12px; animation: pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+@keyframes pop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.results-title { font-family: 'Fredoka', sans-serif; font-size: 28px; font-weight: 600; margin-bottom: 6px; }
+.results-subtitle { font-size: 14px; color: var(--text2); margin-bottom: 24px; }
+
+.results-body { padding: 0 20px 24px; }
+
+.result-card {
+  padding: 16px 18px;
+  border-radius: var(--r);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 1.5px solid;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.result-card:hover { transform: translateX(4px); }
+
+.result-rank {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  flex-shrink: 0;
+  width: 40px;
+  text-align: center;
+}
+
+.result-info h4 { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+.result-info p { font-size: 12px; opacity: 0.7; line-height: 1.4; }
+
+.result-pct {
+  margin-left: auto;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.result-bar {
+  position: absolute;
+  bottom: 0; left: 0;
+  height: 3px;
+  border-radius: 0 3px 0 0;
+  transition: width 1s ease;
+}
+
+/* ══════════════════════════════
+   SCREEN: HOME DASHBOARD
+══════════════════════════════ */
+.home-scroll { padding: 16px 16px 20px; }
+
+.greeting {
+  margin-bottom: 20px;
+}
+.greeting-hello { font-size: 14px; color: var(--text2); margin-bottom: 2px; }
+.greeting-name { font-family: 'Fredoka', sans-serif; font-size: 26px; font-weight: 600; }
+
+.xp-bar-wrap {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.xp-icon { font-size: 28px; }
+
+.xp-info { flex: 1; }
+.xp-label { font-size: 12px; color: var(--text2); font-weight: 600; margin-bottom: 6px; display: flex; justify-content: space-between; }
+.xp-track { height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+.xp-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--yellow)); border-radius: 4px; transition: width 0.6s ease; }
+
+.section-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 10px;
+}
+
+.technique-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.technique-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.technique-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: var(--r) var(--r) 0 0;
+}
+
+.technique-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+
+.tc-icon { font-size: 28px; margin-bottom: 8px; display: block; }
+.tc-name { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+.tc-desc { font-size: 11px; color: var(--text2); line-height: 1.4; }
+.tc-recommended { position: absolute; top: 8px; right: 8px; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 6px; background: var(--yellow-soft); color: var(--yellow); border: 1px solid rgba(251,191,36,0.3); text-transform: uppercase; letter-spacing: 0.04em; }
+
+/* streak */
+.streak-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.streak-days { display: flex; gap: 6px; flex: 1; }
+.streak-day {
+  flex: 1;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text3);
+  flex-direction: column;
+  gap: 2px;
+}
+.streak-day.done { background: var(--primary-glow); color: var(--primary-light); }
+.streak-day.today { background: var(--primary); color: #fff; }
+.streak-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.6; }
+
+.streak-count { text-align: center; }
+.streak-num { font-family: 'Fredoka', sans-serif; font-size: 32px; font-weight: 700; color: var(--yellow); line-height: 1; }
+.streak-lbl { font-size: 10px; color: var(--text3); font-weight: 600; }
+
+/* ══════════════════════════════
+   TECHNIQUE SCREENS (shared)
+══════════════════════════════ */
+.tech-body { padding: 16px; flex: 1; overflow-y: auto; }
+
+/* Flashcard */
+.flashcard-scene {
+  perspective: 1000px;
+  height: 220px;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+.flashcard-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.flashcard-inner.flipped { transform: rotateY(180deg); }
+.flashcard-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  flex-direction: column;
+  gap: 8px;
+}
+.flashcard-back { transform: rotateY(180deg); background: var(--surface2); }
+.flashcard-label { font-size: 11px; font-weight: 700; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; }
+.flashcard-text { font-size: 18px; font-weight: 700; text-align: center; line-height: 1.4; }
+.flashcard-hint { font-size: 12px; color: var(--text3); margin-top: 6px; }
+
+.fc-controls { display: flex; gap: 10px; margin-bottom: 16px; }
+.fc-rate { flex: 1; padding: 10px; border-radius: var(--r-sm); font-size: 13px; font-weight: 700; cursor: pointer; border: none; transition: all 0.15s; }
+.fc-again { background: var(--coral-soft); color: var(--coral); border: 1px solid rgba(251,113,133,0.3); }
+.fc-hard { background: var(--orange-soft); color: var(--orange); border: 1px solid rgba(251,146,60,0.3); }
+.fc-good { background: var(--green-soft); color: var(--green); border: 1px solid rgba(52,211,153,0.3); }
+.fc-rate:hover { transform: translateY(-2px); }
+
+.fc-deck-list { display: flex; flex-direction: column; gap: 8px; }
+.fc-deck-item {
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.fc-deck-item:hover { border-color: var(--border2); background: var(--surface2); }
+.fc-deck-color { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+.fc-deck-info h4 { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.fc-deck-info p { font-size: 11px; color: var(--text2); }
+.fc-deck-count { margin-left: auto; font-size: 11px; font-weight: 700; color: var(--text3); }
+
+/* Add card form */
+.add-card-form { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--r); padding: 16px; margin-bottom: 16px; }
+.add-card-form textarea {
+  width: 100%;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  padding: 10px 12px;
+  resize: none;
+  outline: none;
+  margin-bottom: 8px;
+  transition: border-color 0.2s;
+  min-height: 70px;
+}
+.add-card-form textarea:focus { border-color: var(--primary); }
+
+/* Blurting */
+.blurt-source {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px;
+  margin-bottom: 14px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text2);
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.blurt-pad {
+  width: 100%;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  padding: 14px;
+  resize: none;
+  outline: none;
+  min-height: 160px;
+  transition: border-color 0.2s;
+  margin-bottom: 12px;
+  line-height: 1.7;
+}
+.blurt-pad:focus { border-color: var(--primary); }
+
+.blurt-timer {
+  text-align: center;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 48px;
+  font-weight: 600;
+  color: var(--primary-light);
+  margin: 8px 0 16px;
+}
+
+.blurt-phase-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+/* Feynman */
+.feynman-steps {
+  display: flex;
+  gap: 0;
+  margin-bottom: 16px;
+}
+.feynman-step {
+  flex: 1;
+  padding: 10px 8px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text3);
+  border-bottom: 2px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.feynman-step.active { color: var(--primary-light); border-bottom-color: var(--primary); }
+
+/* Schedule */
+.schedule-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.sched-day {
+  aspect-ratio: 1;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  gap: 2px;
+}
+.sched-day-label { font-size: 9px; font-weight: 700; color: var(--text3); text-transform: uppercase; }
+.sched-day-num { font-size: 13px; font-weight: 700; color: var(--text2); }
+.sched-day.has-session { border-color: var(--primary); background: var(--primary-glow); }
+.sched-day.has-session .sched-day-num { color: var(--primary-light); }
+.sched-day.is-rest { border-color: var(--teal); background: var(--teal-soft); }
+.sched-day.is-rest .sched-day-num { color: var(--teal); }
+.sched-day.today { border-color: var(--yellow); }
+.sched-day.today .sched-day-num { color: var(--yellow); }
+
+.session-item {
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.session-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.session-info h4 { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.session-info p { font-size: 11px; color: var(--text2); }
+.session-time { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--text3); }
+
+/* Achievements */
+.ach-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.ach-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px 14px;
+  text-align: center;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.ach-card.unlocked { border-color: var(--border2); }
+.ach-card.locked { opacity: 0.45; }
+.ach-card:hover { transform: translateY(-2px); }
+
+.ach-icon { font-size: 32px; margin-bottom: 8px; display: block; }
+.ach-name { font-size: 13px; font-weight: 700; margin-bottom: 4px; line-height: 1.3; }
+.ach-desc { font-size: 10px; color: var(--text2); line-height: 1.4; margin-bottom: 8px; }
+
+.ach-rarity {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: inline-block;
+}
+.rarity-common { background: var(--green-soft); color: var(--green); }
+.rarity-rare { background: var(--blue-soft); color: var(--blue); }
+.rarity-epic { background: rgba(167,139,250,0.15); color: #a78bfa; }
+.rarity-legendary { background: var(--yellow-soft); color: var(--yellow); }
+
+.ach-new-badge {
+  position: absolute;
+  top: 8px; right: 8px;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--yellow);
+  color: #000;
+  text-transform: uppercase;
+}
+
+/* Timer */
+.timer-display {
+  text-align: center;
+  padding: 24px 0;
+}
+.timer-circle {
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 4px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  position: relative;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 42px;
+  font-weight: 600;
+  color: var(--primary-light);
+  box-shadow: 0 0 40px var(--primary-glow);
+}
+
+.timer-phase { font-size: 14px; color: var(--text2); font-weight: 700; margin-bottom: 16px; }
+
+/* Modal / toast */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--surface3);
+  border: 1.5px solid var(--border2);
+  border-radius: var(--r);
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 9999;
+  opacity: 0;
+  transition: all 0.3s;
+  white-space: nowrap;
+  pointer-events: none;
+  max-width: 90vw;
+  text-align: center;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.achievement-popup {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  background: linear-gradient(135deg, var(--surface2), var(--surface3));
+  border: 1.5px solid var(--yellow);
+  border-radius: var(--r-lg);
+  padding: 16px 20px;
+  z-index: 9999;
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 90vw;
+  box-shadow: 0 8px 40px rgba(251,191,36,0.2);
+}
+.achievement-popup.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.ach-pop-icon { font-size: 36px; }
+.ach-pop-text h4 { font-size: 11px; font-weight: 700; color: var(--yellow); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
+.ach-pop-text p { font-size: 14px; font-weight: 700; }
+
+/* Comparison view */
+.compare-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.compare-box {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  padding: 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text2);
+  min-height: 100px;
+}
+.compare-box h5 { font-size: 11px; font-weight: 700; color: var(--text3); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* RRR phases */
+.rrr-phase-btn {
+  flex: 1;
+  padding: 12px 8px;
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  color: var(--text2);
+  transition: all 0.15s;
+}
+.rrr-phase-btn.active { background: var(--primary-glow); border-color: var(--primary); color: var(--primary-light); }
+
+/* Diagram canvas */
+.diagram-canvas {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  position: relative;
+  overflow: hidden;
+  height: 300px;
+  margin-bottom: 12px;
+}
+
+.diagram-node {
+  position: absolute;
+  padding: 8px 14px;
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: move;
+  user-select: none;
+  border: 2px solid;
+  transition: box-shadow 0.15s;
+  white-space: nowrap;
+}
+.diagram-node:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+
+.diagram-toolbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.diagram-tool {
+  padding: 7px 12px;
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.diagram-tool:hover { border-color: var(--border2); color: var(--text); }
+.diagram-tool.active-tool { border-color: var(--primary); background: var(--primary-glow); color: var(--primary-light); }
+
+/* Whiteboard */
+.whiteboard-canvas {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  cursor: crosshair;
+  touch-action: none;
+  display: block;
+  margin-bottom: 12px;
+  width: 100%;
+}
+
+.wb-toolbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.wb-color {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.wb-color.selected { border-color: #fff; transform: scale(1.2); }
+
+.wb-size {
+  padding: 5px 10px;
+  border-radius: var(--r-sm);
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  color: var(--text2);
+  cursor: pointer;
+}
+.wb-size.selected { border-color: var(--primary); color: var(--primary-light); }
+
+/* Study session complete */
+.session-complete {
+  text-align: center;
+  padding: 40px 24px;
+}
+.session-complete .big-icon { font-size: 64px; margin-bottom: 16px; animation: pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.session-complete h2 { font-family: 'Fredoka', sans-serif; font-size: 28px; margin-bottom: 8px; }
+.session-complete p { color: var(--text2); font-size: 14px; margin-bottom: 24px; }
+
+/* Cornell notes layout */
+.cornell-wrap { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; margin-bottom: 10px; }
+.cornell-left { display: flex; flex-direction: column; gap: 8px; }
+.cornell-right { display: flex; flex-direction: column; }
+.cornell-label { font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.cornell-input {
+  width: 100%;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  padding: 10px;
+  resize: none;
+  outline: none;
+  min-height: 60px;
+  transition: border-color 0.2s;
+  line-height: 1.6;
+}
+.cornell-input:focus { border-color: var(--primary); }
+.cornell-input.tall { min-height: 200px; }
+.cornell-summary {
+  margin-top: 8px;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ══ WELCOME ══ -->
+  <div class="screen active" id="screen-welcome">
+    <div class="welcome-bg">
+      <div class="orb orb1"></div>
+      <div class="orb orb2"></div>
+      <div class="orb orb3"></div>
+    </div>
+    <div class="welcome-content">
+      <div class="welcome-logo">SmartLearn ✨</div>
+      <div class="welcome-tagline">Discover your best way to learn.<br>Unlock your true potential.</div>
+      <div class="welcome-features">
+        <div class="welcome-feature">
+          <span class="wf-icon">🧠</span>
+          <div class="wf-text">
+            <h4>50-Question Assessment</h4>
+            <p>Find which learning technique fits you best</p>
+          </div>
+        </div>
+        <div class="welcome-feature">
+          <span class="wf-icon">🃏</span>
+          <div class="wf-text">
+            <h4>7 Built-in Study Tools</h4>
+            <p>Flashcards, Feynman, diagrams & more</p>
+          </div>
+        </div>
+        <div class="welcome-feature">
+          <span class="wf-icon">🏆</span>
+          <div class="wf-text">
+            <h4>Achievements & Streaks</h4>
+            <p>Stay motivated with rewards as you grow</p>
+          </div>
+        </div>
+      </div>
+      <div class="welcome-cta">
+        <button class="btn btn-primary btn-full" onclick="goTo('screen-setup')" style="font-size:16px; padding:16px;">
+          Get Started →
+        </button>
+        <div style="margin-top:12px;">
+          <button class="btn btn-ghost btn-full" onclick="loadExistingProfile()">Already have a profile</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PROFILE SETUP ══ -->
+  <div class="screen" id="screen-setup">
+    <div class="topbar">
+      <div class="topbar-logo">SmartLearn</div>
+      <span style="font-size:12px; color:var(--text3);">Step 1 of 2</span>
+    </div>
+    <div class="scroll-body">
+      <div class="setup-content">
+        <div class="setup-title">Create your profile 👋</div>
+        <div class="setup-subtitle">This stays on your device — no account needed.</div>
+
+        <div class="form-group">
+          <label class="form-label">Your Name</label>
+          <input class="form-input" id="input-name" type="text" placeholder="e.g. Maria" maxlength="30" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Pick an Avatar</label>
+          <div class="avatar-grid" id="avatar-grid">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Grade Level</label>
+          <div class="grade-grid" id="grade-grid">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-full" onclick="saveProfile()" style="margin-top:8px;">
+          Next: Take the Assessment →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ QUIZ ══ -->
+  <div class="screen" id="screen-quiz">
+    <div class="quiz-header">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+        <div class="topbar-logo" style="font-size:18px;">SmartLearn</div>
+        <span style="font-size:12px; color:var(--text3); margin-left:auto;">Assessment</span>
+      </div>
+      <div class="quiz-progress-bar">
+        <div class="quiz-progress-fill" id="quiz-progress-fill" style="width:2%"></div>
+      </div>
+      <div class="quiz-meta">
+        <span id="quiz-progress-text">Question 1 of 50</span>
+        <span id="quiz-score-preview">🔒 Results after Q50</span>
+      </div>
+    </div>
+    <div class="quiz-body" id="quiz-body">
+      <!-- populated by JS -->
+    </div>
+    <div class="quiz-footer">
+      <button class="btn btn-secondary" onclick="quizPrev()" id="quiz-prev-btn" style="width:80px;">← Back</button>
+      <button class="btn btn-primary" onclick="quizNext()" id="quiz-next-btn" style="flex:1;">Next →</button>
+    </div>
+  </div>
+
+  <!-- ══ RESULTS ══ -->
+  <div class="screen" id="screen-results">
+    <div class="scroll-body">
+      <div class="results-hero">
+        <div class="results-icon">🎉</div>
+        <div class="results-title">Your Results Are In!</div>
+        <div class="results-subtitle" id="results-subtitle">Here's how your learning styles ranked</div>
+      </div>
+      <div class="results-body" id="results-body">
+        <!-- populated by JS -->
+      </div>
+      <div style="padding: 0 20px 24px;">
+        <button class="btn btn-primary btn-full" onclick="goToHome()">
+          Start Learning → 🚀
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ HOME ══ -->
+  <div class="screen" id="screen-home">
+    <div class="topbar">
+      <div class="topbar-logo">SmartLearn</div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <span id="home-avatar" style="font-size:22px;">🦊</span>
+        <div style="text-align:right;">
+          <div style="font-size:11px; color:var(--text3); font-weight:600;" id="home-xp-label">0 XP</div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-body home-scroll" id="home-scroll">
+      <div class="greeting">
+        <div class="greeting-hello">Welcome back,</div>
+        <div class="greeting-name" id="greeting-name">Learner!</div>
+      </div>
+
+      <div class="xp-bar-wrap">
+        <span class="xp-icon">⚡</span>
+        <div class="xp-info">
+          <div class="xp-label">
+            <span>Level <span id="xp-level">1</span></span>
+            <span><span id="xp-current">0</span> / <span id="xp-next">200</span> XP</span>
+          </div>
+          <div class="xp-track"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <!-- Streak -->
+      <div class="streak-card" style="margin-bottom:16px;">
+        <div class="streak-days" id="streak-days"></div>
+        <div class="streak-count">
+          <div class="streak-num" id="streak-num">0</div>
+          <div class="streak-lbl">DAY STREAK 🔥</div>
+        </div>
+      </div>
+
+      <div class="section-label">Your Recommended Techniques</div>
+      <div class="technique-grid" id="technique-grid">
+        <!-- populated by JS -->
+      </div>
+
+      <div class="section-label">Quick Actions</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
+        <button class="btn btn-secondary" onclick="switchNav('schedule')" style="border-radius:var(--r);">📅 Schedule</button>
+        <button class="btn btn-secondary" onclick="switchNav('achievements')" style="border-radius:var(--r);">🏆 Achievements</button>
+      </div>
+
+      <div class="section-label">Today's Tip 💡</div>
+      <div class="card" id="daily-tip" style="margin-bottom:20px;">
+        <div style="font-size:14px; line-height:1.7; color:var(--text2);"></div>
+      </div>
+    </div>
+    <div class="bottom-nav" id="bottom-nav">
+      <div class="nav-item active" onclick="switchNav('home')">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Home</span>
+      </div>
+      <div class="nav-item" onclick="switchNav('techniques')">
+        <span class="nav-icon">📚</span>
+        <span class="nav-label">Study</span>
+      </div>
+      <div class="nav-item" onclick="switchNav('schedule')">
+        <span class="nav-icon">📅</span>
+        <span class="nav-label">Schedule</span>
+      </div>
+      <div class="nav-item" onclick="switchNav('achievements')">
+        <span class="nav-icon">🏆</span>
+        <span class="nav-label">Awards</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ TECHNIQUES LIST ══ -->
+  <div class="screen" id="screen-techniques">
+    <div class="topbar">
+      <div class="topbar-title">Study Tools 📚</div>
+    </div>
+    <div class="scroll-body" style="padding:16px;">
+      <div class="section-label" style="margin-bottom:12px;">Choose a technique</div>
+      <div id="tech-list-grid" style="display:flex; flex-direction:column; gap:10px;"></div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="switchNav('home')"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></div>
+      <div class="nav-item active" onclick="switchNav('techniques')"><span class="nav-icon">📚</span><span class="nav-label">Study</span></div>
+      <div class="nav-item" onclick="switchNav('schedule')"><span class="nav-icon">📅</span><span class="nav-label">Schedule</span></div>
+      <div class="nav-item" onclick="switchNav('achievements')"><span class="nav-icon">🏆</span><span class="nav-label">Awards</span></div>
+    </div>
+  </div>
+
+  <!-- ══ SCHEDULE ══ -->
+  <div class="screen" id="screen-schedule">
+    <div class="topbar">
+      <div class="topbar-title">My Schedule 📅</div>
+      <button class="btn btn-sm btn-primary" onclick="showAddSession()">+ Add</button>
+    </div>
+    <div class="scroll-body" style="padding:16px;">
+      <div class="section-label">This Week</div>
+      <div class="schedule-grid" id="schedule-grid"></div>
+      <div class="section-label" style="margin-top:16px;">Sessions</div>
+      <div id="sessions-list"></div>
+      <div style="margin-top:12px;">
+        <button class="btn btn-secondary btn-full" onclick="toggleRestDay()">😴 Toggle Rest Day Today</button>
+      </div>
+
+      <!-- Pomodoro Timer -->
+      <div class="section-label" style="margin-top:20px;">Study Timer ⏱</div>
+      <div class="timer-display">
+        <div class="timer-circle" id="timer-display">25:00</div>
+        <div class="timer-phase" id="timer-phase">Focus Session</div>
+        <div style="display:flex; gap:10px; justify-content:center;">
+          <button class="btn btn-primary" onclick="startTimer()" id="timer-start-btn">▶ Start</button>
+          <button class="btn btn-secondary" onclick="resetTimer()">↺ Reset</button>
+        </div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="switchNav('home')"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></div>
+      <div class="nav-item" onclick="switchNav('techniques')"><span class="nav-icon">📚</span><span class="nav-label">Study</span></div>
+      <div class="nav-item active" onclick="switchNav('schedule')"><span class="nav-icon">📅</span><span class="nav-label">Schedule</span></div>
+      <div class="nav-item" onclick="switchNav('achievements')"><span class="nav-icon">🏆</span><span class="nav-label">Awards</span></div>
+    </div>
+  </div>
+
+  <!-- ══ ACHIEVEMENTS ══ -->
+  <div class="screen" id="screen-achievements">
+    <div class="topbar">
+      <div class="topbar-title">Achievements 🏆</div>
+      <div style="font-size:12px; color:var(--text2); font-weight:600;" id="ach-progress-label">0/18 unlocked</div>
+    </div>
+    <div class="scroll-body" style="padding:16px;">
+      <div class="ach-grid" id="ach-grid"></div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="switchNav('home')"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></div>
+      <div class="nav-item" onclick="switchNav('techniques')"><span class="nav-icon">📚</span><span class="nav-label">Study</span></div>
+      <div class="nav-item" onclick="switchNav('schedule')"><span class="nav-icon">📅</span><span class="nav-label">Schedule</span></div>
+      <div class="nav-item active" onclick="switchNav('achievements')"><span class="nav-icon">🏆</span><span class="nav-label">Awards</span></div>
+    </div>
+  </div>
+
+  <!-- ══ TECHNIQUE WORKROOMS ══ -->
+  <!-- Flashcards -->
+  <div class="screen" id="screen-flashcards">
+    <div class="topbar">
+      <div class="back-btn" onclick="goBack()">←</div>
+      <div class="topbar-title">🃏 Flashcards</div>
+      <button class="btn btn-sm btn-primary" onclick="showAddDeck()">+ Deck</button>
+    </div>
+    <div class="scroll-body tech-body" id="fc-main"></div>
+  </div>
+
+  <!-- Blurting -->
+  <div class="screen" id="screen-blurting">
+    <div class="topbar">
+      <div class="back-btn" onclick="goBack()">←</div>
+      <div class="topbar-title">✍️ Blurting</div>
+    </div>
+    <div class="scroll-body tech-body" id="blurt-main"></div>
+  </div>
+
+  <!-- Question Method -->
+  <div class="screen" id="screen-question">
+    <div class="topbar">
+      <div class="back-btn" onclick="goBack()">←</div>
+      <div class="topbar-title">❓ Question Method</div>
+    </div>
+    <div class="scroll-body tech-body" id="cornell-main"></div>
+  </div>
+
+  <!-- Feynman -->
+  <div class="screen" id="screen-feynman">
+    <div class="topbar">
+      <div class="back-btn" onclick="goBack()">←</div>
+      <div class="topbar-title">🧑‍🏫 Feynman Technique</div>
+    </div>
+    <div class="scroll-body tech-body" id="feynman-main"></div>
+  </div>
+
+  <!-- RRR -->
+  <div class="screen" id="screen-rrr">
+    <div class="topbar">
+      <div class="back-btn" onclick="goBack()">←</div>
+      <div class="topbar-title">📖 Read, Recite, Review</div>
+    </div>
+    <div class="scroll-body tech-body" id="rrr-main"></div>
+  </div>
+
+  <!-- Whiteboard -->
+  <div class="screen" id="screen-whiteboard">
+    <div class="topbar">
+      <div class="back-btn" onclick="goBack()">←</div>
+      <div class="topbar-title">🖊️ Whiteboard Dump</div>
+    </div>
+    <div class="tech-body" id="wb-main" style="overflow:hidden; display:flex; flex-direction:column;"></div>
+  </div>
+
+  <!-- Diagramming -->
+  <div class="screen" id="screen-diagram">
+    <div class="topbar">
+      <div class="back-btn" onclick="goBack()">←</div>
+      <div class="topbar-title">🗺️ Active Diagramming</div>
+    </div>
+    <div class="scroll-body tech-body" id="diagram-main"></div>
+  </div>
+
+  <!-- Toast + Achievement Popup -->
+  <div class="toast" id="toast"></div>
+  <div class="achievement-popup" id="ach-popup">
+    <span class="ach-pop-icon" id="ach-pop-icon">🏆</span>
+    <div class="ach-pop-text">
+      <h4>Achievement Unlocked!</h4>
+      <p id="ach-pop-name">Name</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════
+
+const AVATARS = ['🦊','🐼','🐸','🦁','🐺','🐻','🦋','🐬','🦄','🐙'];
+const GRADES = ['Grade 7','Grade 8','Grade 9','Grade 10','Grade 11','Grade 12','College'];
+
+const TECHNIQUES = [
+  { id:'flashcards', name:'Flashcards', icon:'🃏', color:'var(--blue)', colorSoft:'var(--blue-soft)', desc:'Spaced repetition for fast recall', screen:'screen-flashcards' },
+  { id:'blurting', name:'Blurting', icon:'✍️', color:'var(--coral)', colorSoft:'var(--coral-soft)', desc:'Active recall through free writing', screen:'screen-blurting' },
+  { id:'question', name:'Question Method', icon:'❓', color:'var(--green)', colorSoft:'var(--green-soft)', desc:'Cornell note-taking system', screen:'screen-question' },
+  { id:'feynman', name:'Feynman Technique', icon:'🧑‍🏫', color:'var(--orange)', colorSoft:'var(--orange-soft)', desc:'Learn by teaching simply', screen:'screen-feynman' },
+  { id:'rrr', name:'Read, Recite, Review', icon:'📖', color:'var(--teal)', colorSoft:'var(--teal-soft)', desc:'Structured reading cycle', screen:'screen-rrr' },
+  { id:'whiteboard', name:'Brain Dump', icon:'🖊️', color:'var(--yellow)', colorSoft:'var(--yellow-soft)', desc:'Free-form canvas writing', screen:'screen-whiteboard' },
+  { id:'diagram', name:'Active Diagramming', icon:'🗺️', color:'var(--pink)', colorSoft:'var(--pink-soft)', desc:'Mind maps and visual thinking', screen:'screen-diagram' },
+];
+
+const QUIZ_QUESTIONS = [
+  { text:"When you study, you prefer writing down key points rather than just reading.", techniques:{ flashcards:2, blurting:4, question:3 } },
+  { text:"Drawing pictures or diagrams helps you understand topics better.", techniques:{ diagram:5, whiteboard:4 } },
+  { text:"You like testing yourself with questions rather than re-reading notes.", techniques:{ flashcards:4, question:5, rrr:2 } },
+  { text:"Explaining concepts to someone else is how you truly understand them.", techniques:{ feynman:5 } },
+  { text:"You prefer reviewing by going through your notes in a structured order.", techniques:{ rrr:4, question:3 } },
+  { text:"You enjoy creating flashcards and going through them repeatedly.", techniques:{ flashcards:5 } },
+  { text:"Writing everything you remember about a topic without looking at notes feels useful.", techniques:{ blurting:5, whiteboard:3 } },
+  { text:"You tend to remember information better when it's organized visually.", techniques:{ diagram:5, whiteboard:4, flashcards:2 } },
+  { text:"Simplifying complex ideas into plain words helps you grasp them.", techniques:{ feynman:5, blurting:2 } },
+  { text:"You feel confident when you can answer questions about a topic you just read.", techniques:{ question:5, rrr:3 } },
+  { text:"You learn well by reading a passage multiple times.", techniques:{ rrr:5 } },
+  { text:"You enjoy making connections between ideas using maps or webs.", techniques:{ diagram:5, whiteboard:3 } },
+  { text:"Writing a summary of what you just learned without looking helps you retain information.", techniques:{ blurting:5, rrr:3 } },
+  { text:"You like using color-coding or symbols to organize information.", techniques:{ diagram:4, whiteboard:4, flashcards:2 } },
+  { text:"Creating a quiz for yourself is one of your favorite ways to study.", techniques:{ flashcards:5, question:4 } },
+  { text:"You prefer studying alone, going at your own pace.", techniques:{ rrr:3, blurting:3 } },
+  { text:"Teaching a topic to an imaginary student helps you find gaps in your knowledge.", techniques:{ feynman:5 } },
+  { text:"Writing freely on paper clears your mind and organizes thoughts.", techniques:{ whiteboard:5, blurting:3 } },
+  { text:"You find mind maps or concept webs easier to understand than paragraphs.", techniques:{ diagram:5 } },
+  { text:"Reading, hiding the text, and recalling details is an effective way you study.", techniques:{ rrr:5, blurting:3 } },
+  { text:"You often rewrite your notes in simpler terms after class.", techniques:{ feynman:4, blurting:3 } },
+  { text:"Answering practice questions right after reading helps you remember.", techniques:{ question:5, flashcards:3 } },
+  { text:"You remember a topic better when you can draw it out.", techniques:{ diagram:5, whiteboard:3 } },
+  { text:"Flashcard repetition feels like an effective use of your study time.", techniques:{ flashcards:5 } },
+  { text:"Going over the same material multiple times in structured cycles helps you.", techniques:{ rrr:5, flashcards:3 } },
+  { text:"When stuck on a concept, you try to explain it out loud in simple words.", techniques:{ feynman:5, blurting:2 } },
+  { text:"A blank page where you write everything you know feels like a useful start to studying.", techniques:{ blurting:4, whiteboard:5 } },
+  { text:"Organizing your notes into question-and-answer format improves your recall.", techniques:{ question:5, flashcards:3 } },
+  { text:"You notice that diagrams and charts are easier to recall during exams.", techniques:{ diagram:5 } },
+  { text:"Immediately writing what you recall after reading (without looking) improves retention.", techniques:{ blurting:5, rrr:4 } },
+  { text:"Reviewing a simple, short summary you wrote in your own words is effective.", techniques:{ feynman:4, rrr:3, blurting:3 } },
+  { text:"You like grouping related information visually in branches or clusters.", techniques:{ diagram:5, whiteboard:4 } },
+  { text:"Going back and forth between questions and answers in your notes helps lock in information.", techniques:{ question:5 } },
+  { text:"You often use analogies or comparisons when trying to understand something hard.", techniques:{ feynman:5 } },
+  { text:"You prefer a study method you can do quickly in short bursts anywhere.", techniques:{ flashcards:5, blurting:3 } },
+  { text:"You feel confident studying a topic when you can produce a clear diagram of it.", techniques:{ diagram:5 } },
+  { text:"Reviewing errors you made on practice questions is very helpful to you.", techniques:{ flashcards:4, question:4 } },
+  { text:"Writing and rewriting information multiple times is how you memorize best.", techniques:{ blurting:4, whiteboard:3 } },
+  { text:"You prefer outlining a topic before diving into the details.", techniques:{ question:3, feynman:3, rrr:2 } },
+  { text:"Reading aloud or reciting helps you retain what you studied.", techniques:{ rrr:5, feynman:3 } },
+  { text:"You feel comfortable making up your own practice questions for a topic.", techniques:{ question:5 } },
+  { text:"Sketching flowcharts or timelines makes sequences easier to remember.", techniques:{ diagram:5, whiteboard:3 } },
+  { text:"You prefer to understand deeply rather than memorize quickly.", techniques:{ feynman:5, rrr:3 } },
+  { text:"When reviewing, you find that less structured, free-form writing helps you think.", techniques:{ whiteboard:5, blurting:4 } },
+  { text:"Testing yourself repeatedly on the same cards until you get them right is satisfying.", techniques:{ flashcards:5 } },
+  { text:"You like to see the 'big picture' of a topic before studying the details.", techniques:{ diagram:4, whiteboard:3 } },
+  { text:"Reading → hiding → reciting is a natural study habit for you.", techniques:{ rrr:5 } },
+  { text:"Identifying exactly what you don't know (your gaps) motivates you to study.", techniques:{ blurting:4, feynman:4, question:3 } },
+  { text:"You believe that if you can explain something simply, you truly understand it.", techniques:{ feynman:5 } },
+  { text:"You would use an app that lets you create visual notes, diagrams, and study cards.", techniques:{ diagram:3, flashcards:3, whiteboard:3 } },
+];
+
+const OPTION_LABELS = [
+  'Not like me at all',
+  'Rarely like me',
+  'Sometimes like me',
+  'Usually like me',
+  'Very much like me'
+];
+
+const ACHIEVEMENTS_DEF = [
+  { key:'first_profile', icon:'👤', name:'Identity Found', desc:'Created your first profile', rarity:'common' },
+  { key:'quiz_complete', icon:'🧠', name:'Self-Aware Learner', desc:'Completed the 50-question assessment', rarity:'common' },
+  { key:'first_flashcard', icon:'🃏', name:'First Flip', desc:'Reviewed your first flashcard', rarity:'common' },
+  { key:'first_blurt', icon:'✍️', name:'Brain Unlocked', desc:'Completed a Blurting session', rarity:'common' },
+  { key:'first_schedule', icon:'📅', name:'Planner Pro', desc:'Set up your study schedule', rarity:'common' },
+  { key:'first_timer', icon:'⏱', name:'Time Keeper', desc:'Completed a Pomodoro session', rarity:'common' },
+  { key:'streak_3', icon:'🔥', name:'On Fire', desc:'Studied 3 days in a row', rarity:'rare' },
+  { key:'streak_7', icon:'💥', name:'Unstoppable', desc:'Studied 7 days in a row', rarity:'rare' },
+  { key:'five_decks', icon:'🗂️', name:'Deck Builder', desc:'Created 5 flashcard decks', rarity:'rare' },
+  { key:'feynman_5', icon:'🧑‍🏫', name:'Little Professor', desc:'Completed 5 Feynman explanations', rarity:'rare' },
+  { key:'diagram_5', icon:'🗺️', name:'Map Maker', desc:'Created 5 diagrams', rarity:'rare' },
+  { key:'all_techniques', icon:'🌈', name:'Technique Explorer', desc:'Used all 7 learning techniques', rarity:'epic' },
+  { key:'hours_10', icon:'⏰', name:'10-Hour Club', desc:'Accumulated 10+ hours of study time', rarity:'epic' },
+  { key:'study_balance', icon:'🧘', name:'Balance Master', desc:'Scheduled 3+ rest days while studying', rarity:'epic' },
+  { key:'blurt_10', icon:'📝', name:'Blurt Champion', desc:'Completed 10 Blurting sessions', rarity:'epic' },
+  { key:'all_achievements', icon:'🌟', name:'SmartLearn Legend', desc:'Unlocked every other achievement!', rarity:'legendary' },
+  { key:'hours_50', icon:'💯', name:'Century Scholar', desc:'Accumulated 50+ hours of study time', rarity:'legendary' },
+  { key:'quiz_retake', icon:'🔁', name:'Evolved Learner', desc:'Retook the assessment and got a new result', rarity:'legendary' },
+];
+
+const TIPS = [
+  "Spaced repetition is 2-3× more effective than cramming. Review material just before you're about to forget it.",
+  "The Feynman Technique reveals gaps instantly — if you can't explain it simply, you don't know it yet.",
+  "Rest days are not lazy days. Sleep consolidates memory and is essential for learning.",
+  "Short study sessions beat long marathons. 4 × 25-minute sessions outperform 2-hour slogs.",
+  "Blurting immediately after reading shows you exactly what you missed — do it every time.",
+  "Color-coding your diagrams improves recall by up to 50% compared to plain notes.",
+  "The best time to review a flashcard is right before your brain would have forgotten it.",
+  "Reciting out loud engages more of your brain than silently rereading notes.",
+];
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+
+let state = {
+  profile: null,
+  quizAnswers: {},
+  quizScores: {},
+  topTechnique: null,
+  xp: 0,
+  achievements: [],
+  sessions: [],
+  restDays: [],
+  streak: 0,
+  lastStudyDate: null,
+  flashcardDecks: [],
+  techniqueUsed: {},
+  studyMinutes: 0,
+  feynmanCount: 0,
+  diagramCount: 0,
+  blurtCount: 0,
+};
+
+let currentScreen = 'screen-welcome';
+let prevScreen = null;
+let quizCurrentQ = 0;
+let timerInterval = null;
+let timerSeconds = 25 * 60;
+let timerRunning = false;
+let timerPhase = 'focus';
+let pomodoroCount = 0;
+
+// ═══════════════════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════════════════
+
+function saveState() {
+  try { localStorage.setItem('smartlearn_state', JSON.stringify(state)); } catch(e) {}
+}
+
+function loadState() {
+  try {
+    const s = localStorage.getItem('smartlearn_state');
+    if (s) { state = { ...state, ...JSON.parse(s) }; return true; }
+  } catch(e) {}
+  return false;
+}
+
+// ═══════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════
+
+function goTo(screenId) {
+  prevScreen = currentScreen;
+  document.getElementById(currentScreen).classList.remove('active');
+  document.getElementById(screenId).classList.add('active');
+  currentScreen = screenId;
+}
+
+function goBack() {
+  if (prevScreen) goTo(prevScreen);
+  else goTo('screen-techniques');
+}
+
+function switchNav(tab) {
+  const map = { home:'screen-home', techniques:'screen-techniques', schedule:'screen-schedule', achievements:'screen-achievements' };
+  document.querySelectorAll('#screen-home .nav-item, #screen-techniques .nav-item, #screen-schedule .nav-item, #screen-achievements .nav-item').forEach(n => n.classList.remove('active'));
+  goTo(map[tab]);
+
+  if (tab === 'achievements') renderAchievements();
+  if (tab === 'schedule') renderSchedule();
+  if (tab === 'techniques') renderTechList();
+  if (tab === 'home') renderHome();
+
+  const navItems = document.querySelectorAll(`#${map[tab]} .nav-item`);
+  if (navItems.length > 0) {
+    const idx = ['home','techniques','schedule','achievements'].indexOf(tab);
+    if (navItems[idx]) navItems[idx].classList.add('active');
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// PROFILE SETUP
+// ═══════════════════════════════════════════════════════
+
+let selectedAvatar = 0;
+let selectedGrade = '';
+
+function initSetup() {
+  const ag = document.getElementById('avatar-grid');
+  ag.innerHTML = AVATARS.map((a, i) =>
+    `<div class="avatar-opt ${i===0?'selected':''}" onclick="selectAvatar(${i})">${a}</div>`
+  ).join('');
+
+  const gg = document.getElementById('grade-grid');
+  gg.innerHTML = GRADES.map((g, i) =>
+    `<div class="grade-opt" onclick="selectGrade('${g}', this)">${g}</div>`
+  ).join('');
+}
+
+function selectAvatar(i) {
+  selectedAvatar = i;
+  document.querySelectorAll('.avatar-opt').forEach((el, idx) => {
+    el.classList.toggle('selected', idx === i);
+  });
+}
+
+function selectGrade(g, el) {
+  selectedGrade = g;
+  document.querySelectorAll('.grade-opt').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function saveProfile() {
+  const name = document.getElementById('input-name').value.trim();
+  if (!name) { showToast('Please enter your name 😊'); return; }
+  if (!selectedGrade) { showToast('Please select your grade level'); return; }
+
+  state.profile = { name, avatar: AVATARS[selectedAvatar], grade: selectedGrade };
+  saveState();
+  unlockAchievement('first_profile');
+  startQuiz();
+}
+
+function loadExistingProfile() {
+  if (loadState() && state.profile) {
+    renderHome();
+    goTo('screen-home');
+  } else {
+    showToast('No saved profile found. Create one!');
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// QUIZ
+// ═══════════════════════════════════════════════════════
+
+function startQuiz() {
+  state.quizAnswers = {};
+  quizCurrentQ = 0;
+  goTo('screen-quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = QUIZ_QUESTIONS[quizCurrentQ];
+  const pct = ((quizCurrentQ + 1) / QUIZ_QUESTIONS.length * 100).toFixed(0);
+  document.getElementById('quiz-progress-fill').style.width = pct + '%';
+  document.getElementById('quiz-progress-text').textContent = `Question ${quizCurrentQ + 1} of ${QUIZ_QUESTIONS.length}`;
+
+  const selected = state.quizAnswers[quizCurrentQ];
+
+  document.getElementById('quiz-body').innerHTML = `
+    <div class="quiz-question-num">Question ${quizCurrentQ + 1}</div>
+    <div class="quiz-question-text">${q.text}</div>
+    <div class="quiz-options">
+      ${OPTION_LABELS.map((label, i) => `
+        <div class="quiz-opt ${selected === i+1 ? 'selected' : ''}" onclick="selectQuizOpt(${i+1}, this)">
+          <div class="quiz-opt-dot"></div>
+          <span>${label}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  document.getElementById('quiz-prev-btn').style.opacity = quizCurrentQ === 0 ? '0.3' : '1';
+  document.getElementById('quiz-next-btn').textContent = quizCurrentQ === QUIZ_QUESTIONS.length - 1 ? '✨ See Results' : 'Next →';
+}
+
+function selectQuizOpt(val, el) {
+  state.quizAnswers[quizCurrentQ] = val;
+  document.querySelectorAll('.quiz-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  el.querySelector('.quiz-opt-dot').innerHTML = '';
+}
+
+function quizNext() {
+  if (!state.quizAnswers[quizCurrentQ]) { showToast('Please select an answer 😊'); return; }
+  if (quizCurrentQ < QUIZ_QUESTIONS.length - 1) {
+    quizCurrentQ++;
+    renderQuestion();
+  } else {
+    computeResults();
+  }
+}
+
+function quizPrev() {
+  if (quizCurrentQ > 0) { quizCurrentQ--; renderQuestion(); }
+}
+
+function computeResults() {
+  const scores = {};
+  TECHNIQUES.forEach(t => scores[t.id] = 0);
+
+  QUIZ_QUESTIONS.forEach((q, i) => {
+    const answer = state.quizAnswers[i] || 3;
+    Object.entries(q.techniques).forEach(([tid, weight]) => {
+      if (scores[tid] !== undefined) scores[tid] += answer * weight;
+    });
+  });
+
+  const max = Math.max(...Object.values(scores));
+  const normalized = {};
+  Object.entries(scores).forEach(([k, v]) => normalized[k] = Math.round(v / max * 100));
+
+  state.quizScores = normalized;
+  const sorted = Object.entries(normalized).sort((a, b) => b[1] - a[1]);
+  state.topTechnique = sorted[0][0];
+
+  const prevTop = loadState() ? (JSON.parse(localStorage.getItem('smartlearn_state') || '{}').topTechnique) : null;
+  if (prevTop && prevTop !== state.topTechnique) unlockAchievement('quiz_retake');
+
+  saveState();
+  unlockAchievement('quiz_complete');
+  renderResults();
+  goTo('screen-results');
+}
+
+function renderResults() {
+  const sorted = Object.entries(state.quizScores).sort((a, b) => b[1] - a[1]);
+  const techMap = {};
+  TECHNIQUES.forEach(t => techMap[t.id] = t);
+
+  const medals = ['🥇','🥈','🥉'];
+  const body = document.getElementById('results-body');
+
+  document.getElementById('results-subtitle').textContent = `Hi ${state.profile.name}! Here's how your learning styles ranked:`;
+
+  body.innerHTML = sorted.slice(0, 4).map(([ id, pct ], i) => {
+    const t = techMap[id];
+    if (!t) return '';
+    return `
+      <div class="result-card" style="background:${t.colorSoft}; border-color:${t.color}40; color:${t.color};" onclick="switchNav('techniques')">
+        <div class="result-rank">${medals[i] || (i+1)}</div>
+        <div class="result-info">
+          <h4>${t.icon} ${t.name}</h4>
+          <p>${t.desc}</p>
+        </div>
+        <div class="result-pct">${pct}%</div>
+        <div class="result-bar" style="background:${t.color}; width:${pct}%;"></div>
+      </div>
+    `;
+  }).join('');
+}
+
+function goToHome() {
+  renderHome();
+  goTo('screen-home');
+}
+
+// ═══════════════════════════════════════════════════════
+// HOME
+// ═══════════════════════════════════════════════════════
+
+function renderHome() {
+  if (!state.profile) return;
+  document.getElementById('greeting-name').textContent = state.profile.name + '! ' + state.profile.avatar;
+  document.getElementById('home-avatar').textContent = state.profile.avatar;
+
+  // XP
+  const level = Math.floor(state.xp / 200) + 1;
+  const xpInLevel = state.xp % 200;
+  document.getElementById('xp-level').textContent = level;
+  document.getElementById('xp-current').textContent = xpInLevel;
+  document.getElementById('xp-next').textContent = 200;
+  document.getElementById('xp-fill').style.width = (xpInLevel / 200 * 100) + '%';
+  document.getElementById('home-xp-label').textContent = state.xp + ' XP';
+
+  // Streak
+  renderStreakDays();
+
+  // Technique grid
+  const sorted = state.quizScores ? Object.entries(state.quizScores).sort((a, b) => b[1] - a[1]) : [];
+  const topIds = sorted.map(s => s[0]);
+  const grid = document.getElementById('technique-grid');
+  grid.innerHTML = TECHNIQUES.map(t => {
+    const isTop = topIds[0] === t.id;
+    const rank = topIds.indexOf(t.id) + 1;
+    return `
+      <div class="technique-card" onclick="openTechnique('${t.id}')" style="--tc:${t.color};">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${t.color};border-radius:var(--r) var(--r) 0 0;"></div>
+        ${isTop ? '<div class="tc-recommended">⭐ Best fit</div>' : (rank <= 3 && rank > 0 ? `<div class="tc-recommended" style="background:var(--surface3);color:var(--text2);border-color:var(--border);">#${rank} match</div>` : '')}
+        <span class="tc-icon">${t.icon}</span>
+        <div class="tc-name">${t.name}</div>
+        <div class="tc-desc">${t.desc}</div>
+      </div>
+    `;
+  }).join('');
+
+  // Daily tip
+  const tip = TIPS[new Date().getDate() % TIPS.length];
+  document.querySelector('#daily-tip div').textContent = tip;
+}
+
+function renderStreakDays() {
+  const days = ['S','M','T','W','T','F','S'];
+  const today = new Date().getDay();
+  const container = document.getElementById('streak-days');
+  container.innerHTML = days.map((d, i) => {
+    const isToday = i === today;
+    const isDone = state.sessions.some(s => {
+      const sd = new Date(s.date);
+      return sd.getDay() === i && (new Date() - sd) < 7 * 86400000;
+    });
+    return `
+      <div class="streak-day ${isToday ? 'today' : ''} ${isDone ? 'done' : ''}">
+        <span>${d}</span>
+        ${isDone || isToday ? '<div class="streak-dot"></div>' : ''}
+      </div>
+    `;
+  }).join('');
+  document.getElementById('streak-num').textContent = state.streak || 0;
+}
+
+// ═══════════════════════════════════════════════════════
+// TECHNIQUE OPENING
+// ═══════════════════════════════════════════════════════
+
+function openTechnique(id) {
+  if (!state.techniqueUsed) state.techniqueUsed = {};
+  state.techniqueUsed[id] = (state.techniqueUsed[id] || 0) + 1;
+  saveState();
+
+  const t = TECHNIQUES.find(t => t.id === id);
+  if (!t) return;
+
+  if (Object.keys(state.techniqueUsed).length >= 7) unlockAchievement('all_techniques');
+
+  switch(id) {
+    case 'flashcards': initFlashcards(); break;
+    case 'blurting': initBlurting(); break;
+    case 'question': initCornell(); break;
+    case 'feynman': initFeynman(); break;
+    case 'rrr': initRRR(); break;
+    case 'whiteboard': initWhiteboard(); break;
+    case 'diagram': initDiagram(); break;
+  }
+  goTo(t.screen);
+}
+
+function renderTechList() {
+  const sorted = state.quizScores ? Object.entries(state.quizScores).sort((a, b) => b[1] - a[1]) : [];
+  const topIds = sorted.map(s => s[0]);
+  const grid = document.getElementById('tech-list-grid');
+  grid.innerHTML = TECHNIQUES.map(t => {
+    const rank = topIds.indexOf(t.id) + 1;
+    return `
+      <div class="technique-card" onclick="openTechnique('${t.id}')" style="display:flex; align-items:center; gap:14px; padding:16px; border-radius:var(--r);">
+        <span style="font-size:32px;">${t.icon}</span>
+        <div style="flex:1;">
+          <div style="font-size:15px; font-weight:700; margin-bottom:3px;">${t.name}</div>
+          <div style="font-size:12px; color:var(--text2);">${t.desc}</div>
+          ${rank > 0 ? `<div style="margin-top:6px; display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:8px; font-size:10px; font-weight:700; background:${t.colorSoft}; color:${t.color};">${rank === 1 ? '⭐ Best match' : `#${rank} match`} · ${state.quizScores[t.id] || 0}%</div>` : ''}
+        </div>
+        <span style="color:var(--text3); font-size:18px;">›</span>
+      </div>
+    `;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// FLASHCARDS
+// ═══════════════════════════════════════════════════════
+
+let currentDeckIdx = null;
+let currentCardIdx = 0;
+let isFlipped = false;
+
+function initFlashcards() {
+  renderFlashcardMain();
+}
+
+function renderFlashcardMain() {
+  if (!state.flashcardDecks) state.flashcardDecks = [];
+  const main = document.getElementById('fc-main');
+
+  if (currentDeckIdx !== null && state.flashcardDecks[currentDeckIdx]) {
+    renderFlashcardStudy();
+    return;
+  }
+
+  main.innerHTML = `
+    <div style="margin-bottom:16px;">
+      <div class="section-label">My Decks (${state.flashcardDecks.length})</div>
+      ${state.flashcardDecks.length === 0 ? `<div style="text-align:center; padding:40px 20px; color:var(--text3);">No decks yet! Create one to get started.</div>` : ''}
+      <div class="fc-deck-list">
+        ${state.flashcardDecks.map((deck, i) => `
+          <div class="fc-deck-item" onclick="openDeck(${i})">
+            <div class="fc-deck-color" style="background:${deck.color};"></div>
+            <div class="fc-deck-info">
+              <h4>${deck.name}</h4>
+              <p>${deck.subject}</p>
+            </div>
+            <div class="fc-deck-count">${deck.cards.length} cards</div>
+            <span style="color:var(--text3); margin-left:4px;">›</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function showAddDeck() {
+  const name = prompt('Deck name (e.g. "Chapter 3 — Photosynthesis"):');
+  if (!name) return;
+  const subject = prompt('Subject:') || 'General';
+  const colors = ['#60a5fa','#34d399','#fb7185','#fbbf24','#f472b6','#a78bfa','#2dd4bf'];
+  const color = colors[state.flashcardDecks.length % colors.length];
+  state.flashcardDecks.push({ name, subject, color, cards: [] });
+  saveState();
+  if (state.flashcardDecks.length >= 5) unlockAchievement('five_decks');
+  renderFlashcardMain();
+  showToast('Deck created! 🃏');
+}
+
+function openDeck(i) {
+  currentDeckIdx = i;
+  currentCardIdx = 0;
+  isFlipped = false;
+  renderFlashcardStudy();
+}
+
+function renderFlashcardStudy() {
+  const deck = state.flashcardDecks[currentDeckIdx];
+  const main = document.getElementById('fc-main');
+
+  main.innerHTML = `
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+      <button class="btn btn-ghost btn-sm" onclick="currentDeckIdx=null; renderFlashcardMain();">← Decks</button>
+      <span style="font-size:14px; font-weight:700;">${deck.name}</span>
+      <span class="pill" style="margin-left:auto;">${deck.cards.length} cards</span>
+    </div>
+
+    ${deck.cards.length === 0 ? `
+      <div style="text-align:center; padding:40px 20px; color:var(--text3);">
+        <div style="font-size:40px; margin-bottom:12px;">🃏</div>
+        <div style="font-size:14px;">No cards yet. Add your first card!</div>
+      </div>
+    ` : `
+      <div class="flashcard-scene" onclick="flipCard()" id="fc-scene">
+        <div class="flashcard-inner" id="fc-inner">
+          <div class="flashcard-face">
+            <div class="flashcard-label">Front</div>
+            <div class="flashcard-text" id="fc-front-text">${deck.cards[currentCardIdx]?.front || ''}</div>
+            <div class="flashcard-hint">Tap to flip ↩</div>
+          </div>
+          <div class="flashcard-face flashcard-back">
+            <div class="flashcard-label">Back</div>
+            <div class="flashcard-text" id="fc-back-text">${deck.cards[currentCardIdx]?.back || ''}</div>
+          </div>
+        </div>
+      </div>
+      <div class="fc-controls">
+        <button class="fc-rate fc-again" onclick="rateCard('again')">↩ Again</button>
+        <button class="fc-rate fc-hard" onclick="rateCard('hard')">😅 Hard</button>
+        <button class="fc-rate fc-good" onclick="rateCard('good')">✅ Good</button>
+      </div>
+      <div style="text-align:center; font-size:12px; color:var(--text3); margin-bottom:16px;">
+        Card ${currentCardIdx + 1} of ${deck.cards.length}
+      </div>
+    `}
+
+    <div class="add-card-form">
+      <div class="section-label" style="margin-bottom:10px;">Add New Card</div>
+      <textarea id="fc-new-front" placeholder="Front (question / term)"></textarea>
+      <textarea id="fc-new-back" placeholder="Back (answer / definition)"></textarea>
+      <button class="btn btn-primary btn-full btn-sm" onclick="addCard()">Add Card +</button>
+    </div>
+  `;
+}
+
+function flipCard() {
+  isFlipped = !isFlipped;
+  document.getElementById('fc-inner').classList.toggle('flipped', isFlipped);
+}
+
+function rateCard(rating) {
+  const deck = state.flashcardDecks[currentDeckIdx];
+  if (!deck || deck.cards.length === 0) return;
+
+  isFlipped = false;
+  if (rating === 'again') {
+    // keep card
+  } else {
+    currentCardIdx = (currentCardIdx + 1) % deck.cards.length;
+  }
+
+  addXP(5);
+  unlockAchievement('first_flashcard');
+  renderFlashcardStudy();
+}
+
+function addCard() {
+  const front = document.getElementById('fc-new-front').value.trim();
+  const back = document.getElementById('fc-new-back').value.trim();
+  if (!front || !back) { showToast('Fill in both sides!'); return; }
+
+  state.flashcardDecks[currentDeckIdx].cards.push({ front, back });
+  saveState();
+  showToast('Card added! 🃏');
+  renderFlashcardStudy();
+}
+
+// ═══════════════════════════════════════════════════════
+// BLURTING
+// ═══════════════════════════════════════════════════════
+
+let blurtPhase = 'write_source'; // write_source → blurt → compare
+let blurtSource = '';
+let blurtText = '';
+let blurtTimerInt = null;
+let blurtSecs = 120;
+
+function initBlurting() {
+  blurtPhase = 'write_source';
+  blurtSource = '';
+  blurtText = '';
+  renderBlurtMain();
+}
+
+function renderBlurtMain() {
+  const main = document.getElementById('blurt-main');
+  if (blurtPhase === 'write_source') {
+    main.innerHTML = `
+      <div class="blurt-phase-label" style="background:var(--blue-soft); color:var(--blue); border:1px solid rgba(96,165,250,0.3);">📖 Step 1: Enter your source material</div>
+      <div style="font-size:13px; color:var(--text2); margin-bottom:12px;">Paste or type what you want to memorize. You'll hide this and write from memory.</div>
+      <textarea class="blurt-pad" id="blurt-source-input" placeholder="Paste or type your notes / topic here...">${blurtSource}</textarea>
+      <button class="btn btn-primary btn-full" onclick="startBlurt()">Start Blurting! ✍️</button>
+    `;
+  } else if (blurtPhase === 'blurting') {
+    main.innerHTML = `
+      <div class="blurt-phase-label" style="background:var(--coral-soft); color:var(--coral); border:1px solid rgba(251,113,133,0.3);">✍️ Step 2: Write everything you remember</div>
+      <div class="blurt-timer" id="blurt-timer-display">2:00</div>
+      <div style="font-size:13px; color:var(--text2); margin-bottom:12px;">Don't look back! Write everything you can recall about the topic.</div>
+      <textarea class="blurt-pad" id="blurt-text-input" placeholder="Start writing..." style="min-height:200px;"></textarea>
+      <button class="btn btn-primary btn-full" onclick="endBlurt()">Done — Show Comparison →</button>
+    `;
+    startBlurtTimer();
+  } else if (blurtPhase === 'compare') {
+    main.innerHTML = `
+      <div class="blurt-phase-label" style="background:var(--green-soft); color:var(--green); border:1px solid rgba(52,211,153,0.3);">✅ Step 3: Compare & see your gaps</div>
+      <div class="compare-wrap">
+        <div class="compare-box">
+          <h5>Source Material</h5>
+          ${blurtSource}
+        </div>
+        <div class="compare-box">
+          <h5>What You Wrote</h5>
+          ${blurtText || '<span style="opacity:0.4;">Nothing written</span>'}
+        </div>
+      </div>
+      <div style="background:var(--surface); border:1.5px solid var(--border); border-radius:var(--r); padding:14px; margin-bottom:14px; font-size:13px; color:var(--text2); line-height:1.7;">
+        💡 <strong style="color:var(--text);">Highlight gaps:</strong> Look at what you missed in the source. Those are your weak spots — study them next!
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-primary" style="flex:1;" onclick="initBlurting()">Try Again 🔄</button>
+        <button class="btn btn-secondary" style="flex:1;" onclick="switchNav('home')">Done ✅</button>
+      </div>
+    `;
+  }
+}
+
+function startBlurt() {
+  blurtSource = document.getElementById('blurt-source-input').value.trim();
+  if (!blurtSource) { showToast('Add some source material first!'); return; }
+  blurtPhase = 'blurting';
+  blurtSecs = 120;
+  renderBlurtMain();
+}
+
+function startBlurtTimer() {
+  clearInterval(blurtTimerInt);
+  blurtTimerInt = setInterval(() => {
+    blurtSecs--;
+    const m = Math.floor(blurtSecs / 60);
+    const s = blurtSecs % 60;
+    const el = document.getElementById('blurt-timer-display');
+    if (el) el.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+    if (blurtSecs <= 0) { clearInterval(blurtTimerInt); endBlurt(); }
+  }, 1000);
+}
+
+function endBlurt() {
+  clearInterval(blurtTimerInt);
+  blurtText = document.getElementById('blurt-text-input')?.value.trim() || blurtText;
+  blurtPhase = 'compare';
+  state.blurtCount = (state.blurtCount || 0) + 1;
+  addXP(15);
+  logSession('blurting');
+  unlockAchievement('first_blurt');
+  if (state.blurtCount >= 10) unlockAchievement('blurt_10');
+  saveState();
+  renderBlurtMain();
+}
+
+// ═══════════════════════════════════════════════════════
+// CORNELL / QUESTION METHOD
+// ═══════════════════════════════════════════════════════
+
+function initCornell() { renderCornell(); }
+
+function renderCornell() {
+  const main = document.getElementById('cornell-main');
+  main.innerHTML = `
+    <div style="font-size:13px; color:var(--text2); margin-bottom:14px; line-height:1.6;">
+      📌 <strong style="color:var(--text);">Cornell Notes:</strong> Write questions in the left column, detailed notes on the right. Summarize below.
+    </div>
+    <div class="cornell-wrap">
+      <div class="cornell-left">
+        <div class="cornell-label">Questions / Cues</div>
+        <textarea class="cornell-input tall" id="cornell-q" placeholder="What causes...?&#10;&#10;Define...&#10;&#10;Why does...?"></textarea>
+      </div>
+      <div class="cornell-right">
+        <div class="cornell-label">Notes</div>
+        <textarea class="cornell-input tall" id="cornell-n" placeholder="Write your detailed notes here...&#10;&#10;Key facts, definitions, examples..."></textarea>
+      </div>
+    </div>
+    <div class="cornell-summary">
+      <div class="cornell-label">Summary</div>
+      <textarea class="cornell-input" id="cornell-s" placeholder="Summarize the key takeaways in 2–3 sentences..." style="min-height:80px;"></textarea>
+    </div>
+    <div style="display:flex; gap:10px; margin-top:12px;">
+      <button class="btn btn-primary" style="flex:1;" onclick="saveCornell()">💾 Save Note</button>
+      <button class="btn btn-secondary" style="flex:1;" onclick="cornellQuizMode()">🎯 Quiz Mode</button>
+    </div>
+  `;
+}
+
+function saveCornell() {
+  addXP(10);
+  logSession('question');
+  showToast('Notes saved! 📝 +10 XP');
+}
+
+function cornellQuizMode() {
+  const q = document.getElementById('cornell-q').value;
+  const n = document.getElementById('cornell-n').value;
+  if (!q || !n) { showToast('Fill in questions and notes first!'); return; }
+
+  const main = document.getElementById('cornell-main');
+  main.innerHTML = `
+    <div class="blurt-phase-label" style="background:var(--green-soft); color:var(--green); border:1px solid rgba(52,211,153,0.3);">🎯 Quiz Mode — Answers hidden</div>
+    <div style="font-size:13px; color:var(--text2); margin-bottom:14px;">Try to answer these questions from memory:</div>
+    <div class="compare-box" style="margin-bottom:14px; min-height:auto;">${q.split('\n').filter(Boolean).map(l => `<div>❓ ${l}</div>`).join('<br>')}</div>
+    <textarea class="blurt-pad" placeholder="Write your answers here..." style="min-height:160px;"></textarea>
+    <button class="btn btn-primary btn-full" onclick="renderCornell()">← Back to Notes</button>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════
+// FEYNMAN
+// ═══════════════════════════════════════════════════════
+
+let feynmanStep = 0;
+
+function initFeynman() { feynmanStep = 0; renderFeynman(); }
+
+function renderFeynman() {
+  const steps = ['Concept', 'Explain', 'Find Gaps', 'Simplify'];
+  const main = document.getElementById('feynman-main');
+  main.innerHTML = `
+    <div class="feynman-steps">
+      ${steps.map((s, i) => `<div class="feynman-step ${i === feynmanStep ? 'active' : ''}" onclick="feynmanStep=${i}; renderFeynman();">${i+1}. ${s}</div>`).join('')}
+    </div>
+    ${feynmanStep === 0 ? `
+      <div style="font-size:13px; color:var(--text2); margin-bottom:12px; line-height:1.6;">📌 What concept do you want to understand deeply? Name it and write what you already know.</div>
+      <input class="form-input" id="feynman-concept" placeholder="Concept name (e.g. Photosynthesis)" style="margin-bottom:10px;">
+      <textarea class="blurt-pad" id="feynman-known" placeholder="Write what you already know about this topic..."></textarea>
+      <button class="btn btn-primary btn-full" onclick="feynmanStep=1; renderFeynman();">Next: Explain It →</button>
+    ` : feynmanStep === 1 ? `
+      <div style="font-size:13px; color:var(--text2); margin-bottom:12px; line-height:1.6;">🧒 Explain this concept <strong style="color:var(--text);">as if you were teaching a 10-year-old.</strong> Use simple words and analogies.</div>
+      <textarea class="blurt-pad" id="feynman-explain" placeholder="Imagine you're explaining to a child who has never heard of this...&#10;&#10;Start with: 'So basically, it's like...'" style="min-height:220px;"></textarea>
+      <button class="btn btn-primary btn-full" onclick="feynmanStep=2; renderFeynman();">Next: Find Gaps →</button>
+    ` : feynmanStep === 2 ? `
+      <div style="font-size:13px; color:var(--text2); margin-bottom:12px; line-height:1.6;">🔍 Where did you get stuck? What terms did you use that you couldn't simplify? Those are your gaps.</div>
+      <textarea class="blurt-pad" id="feynman-gaps" placeholder="I got confused when...&#10;&#10;I used jargon I can't explain: ...&#10;&#10;I'm still unsure about..." style="min-height:180px;"></textarea>
+      <button class="btn btn-primary btn-full" onclick="feynmanStep=3; renderFeynman();">Next: Simplify →</button>
+    ` : `
+      <div style="font-size:13px; color:var(--text2); margin-bottom:12px; line-height:1.6;">✨ Go back to your sources, fill in your gaps, then write the <strong style="color:var(--text);">simplest, clearest explanation</strong> of this concept.</div>
+      <textarea class="blurt-pad" id="feynman-final" placeholder="Final explanation in your own simple words..." style="min-height:200px;"></textarea>
+      <button class="btn btn-primary btn-full" onclick="saveFeynman()">✅ Complete Explanation!</button>
+    `}
+  `;
+}
+
+function saveFeynman() {
+  state.feynmanCount = (state.feynmanCount || 0) + 1;
+  addXP(20);
+  logSession('feynman');
+  if (state.feynmanCount >= 5) unlockAchievement('feynman_5');
+  saveState();
+  showToast('Feynman session saved! +20 XP 🧑‍🏫');
+  feynmanStep = 0;
+  renderFeynman();
+}
+
+// ═══════════════════════════════════════════════════════
+// READ RECITE REVIEW
+// ═══════════════════════════════════════════════════════
+
+let rrrPhase = 'read';
+
+function initRRR() { rrrPhase = 'read'; renderRRR(); }
+
+function renderRRR() {
+  const main = document.getElementById('rrr-main');
+  const phases = [{ id:'read', label:'📖 Read' }, { id:'recite', label:'🗣 Recite' }, { id:'review', label:'✅ Review' }];
+
+  main.innerHTML = `
+    <div style="display:flex; gap:8px; margin-bottom:16px;">
+      ${phases.map(p => `<button class="rrr-phase-btn ${rrrPhase === p.id ? 'active' : ''}" onclick="rrrPhase='${p.id}'; renderRRR();">${p.label}</button>`).join('')}
+    </div>
+    ${rrrPhase === 'read' ? `
+      <div style="font-size:13px; color:var(--text2); margin-bottom:10px;">Step 1: Paste your passage and read it carefully. Then move to Recite.</div>
+      <textarea class="blurt-pad" id="rrr-source-input" placeholder="Paste your reading material here..." style="min-height:200px;"></textarea>
+      <button class="btn btn-primary btn-full" onclick="rrrPhase='recite'; renderRRR();">I've Read It → Recite Now</button>
+    ` : rrrPhase === 'recite' ? `
+      <div style="font-size:13px; color:var(--text2); margin-bottom:10px;">Step 2: Without looking, write everything you remember from the passage.</div>
+      <div style="background:var(--surface); border:1.5px solid var(--border); border-radius:var(--r); padding:12px; margin-bottom:12px; font-size:13px; color:var(--text3);">
+        📵 Source hidden — rely on memory only!
+      </div>
+      <textarea class="blurt-pad" id="rrr-recite-input" placeholder="Write what you recall..." style="min-height:200px;"></textarea>
+      <button class="btn btn-primary btn-full" onclick="rrrPhase='review'; renderRRR();">Compare → Review</button>
+    ` : `
+      <div style="font-size:13px; color:var(--text2); margin-bottom:10px;">Step 3: Compare what you wrote with the original. Note what you missed.</div>
+      <div class="compare-wrap">
+        <div class="compare-box"><h5>Original Passage</h5><div id="rrr-orig-text" style="font-size:12px; line-height:1.7;"></div></div>
+        <div class="compare-box"><h5>Your Recitation</h5><div id="rrr-recite-text" style="font-size:12px; line-height:1.7;"></div></div>
+      </div>
+      <div style="display:flex; gap:10px; margin-top:12px;">
+        <button class="btn btn-primary" style="flex:1;" onclick="rrrDone()">✅ Session Complete!</button>
+        <button class="btn btn-secondary" style="flex:1;" onclick="rrrPhase='read'; renderRRR();">🔄 Try Again</button>
+      </div>
+    `}
+  `;
+
+  if (rrrPhase === 'review') {
+    const origEl = document.getElementById('rrr-orig-text');
+    const reciteEl = document.getElementById('rrr-recite-text');
+    if (origEl) origEl.textContent = window._rrrSource || '(No source found — go back and enter it)';
+    if (reciteEl) reciteEl.textContent = window._rrrRecite || '(Nothing recited)';
+  }
+
+  if (rrrPhase === 'recite') {
+    window._rrrSource = document.getElementById('rrr-source-input')?.value || window._rrrSource;
+  }
+}
+
+function rrrDone() {
+  window._rrrRecite = document.getElementById('rrr-recite-input')?.value || '';
+  addXP(15);
+  logSession('rrr');
+  saveState();
+  showToast('RRR session complete! +15 XP 📖');
+  rrrPhase = 'read';
+  renderRRR();
+}
+
+// ═══════════════════════════════════════════════════════
+// WHITEBOARD
+// ═══════════════════════════════════════════════════════
+
+let wbCtx = null;
+let wbDrawing = false;
+let wbColor = '#9b80ff';
+let wbSize = 3;
+let wbLastX = 0, wbLastY = 0;
+
+function initWhiteboard() {
+  const main = document.getElementById('wb-main');
+  main.innerHTML = `
+    <div style="padding:10px 16px 8px; flex-shrink:0;">
+      <div class="wb-toolbar">
+        <div style="display:flex; gap:6px; align-items:center;">
+          ${['#9b80ff','#fb7185','#34d399','#fbbf24','#60a5fa','#f472b6','#fff'].map(c =>
+            `<div class="wb-color ${c===wbColor?'selected':''}" style="background:${c};" onclick="setWbColor('${c}', this)"></div>`
+          ).join('')}
+        </div>
+        <div style="display:flex; gap:4px;">
+          ${[2,4,8].map(s => `<div class="wb-size ${s===wbSize?'selected':''}" onclick="setWbSize(${s}, this)">${s===2?'S':s===4?'M':'L'}</div>`).join('')}
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="clearWb()">🗑 Clear</button>
+        <button class="btn btn-primary btn-sm" onclick="saveWb()">✅ Done</button>
+      </div>
+    </div>
+    <canvas id="wb-canvas" class="whiteboard-canvas" style="flex:1; height:calc(100dvh - 200px);"></canvas>
+  `;
+
+  const canvas = document.getElementById('wb-canvas');
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+  wbCtx = canvas.getContext('2d');
+  wbCtx.lineJoin = 'round';
+  wbCtx.lineCap = 'round';
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches ? e.touches[0] : e;
+    return { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
+  }
+
+  canvas.addEventListener('mousedown', e => { wbDrawing=true; const p=getPos(e); wbLastX=p.x; wbLastY=p.y; });
+  canvas.addEventListener('mousemove', e => { if(!wbDrawing) return; draw(getPos(e)); });
+  canvas.addEventListener('mouseup', () => wbDrawing=false);
+  canvas.addEventListener('mouseleave', () => wbDrawing=false);
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); wbDrawing=true; const p=getPos(e); wbLastX=p.x; wbLastY=p.y; }, {passive:false});
+  canvas.addEventListener('touchmove', e => { e.preventDefault(); if(!wbDrawing) return; draw(getPos(e)); }, {passive:false});
+  canvas.addEventListener('touchend', () => wbDrawing=false);
+}
+
+function draw(pos) {
+  wbCtx.strokeStyle = wbColor;
+  wbCtx.lineWidth = wbSize;
+  wbCtx.beginPath();
+  wbCtx.moveTo(wbLastX, wbLastY);
+  wbCtx.lineTo(pos.x, pos.y);
+  wbCtx.stroke();
+  wbLastX = pos.x;
+  wbLastY = pos.y;
+}
+
+function setWbColor(c, el) {
+  wbColor = c;
+  document.querySelectorAll('.wb-color').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function setWbSize(s, el) {
+  wbSize = s;
+  document.querySelectorAll('.wb-size').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function clearWb() {
+  const canvas = document.getElementById('wb-canvas');
+  if (wbCtx) wbCtx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function saveWb() {
+  addXP(10);
+  logSession('whiteboard');
+  showToast('Brain dump saved! +10 XP 🖊️');
+  goBack();
+}
+
+// ═══════════════════════════════════════════════════════
+// DIAGRAMMING
+// ═══════════════════════════════════════════════════════
+
+let diagramNodes = [];
+let diagramDragIdx = null;
+let diagramDragOffset = {x:0, y:0};
+let diagramNodeColor = '#9b80ff';
+
+function initDiagram() { renderDiagram(); }
+
+function renderDiagram() {
+  const main = document.getElementById('diagram-main');
+  const colors = ['#9b80ff','#fb7185','#34d399','#fbbf24','#60a5fa','#f472b6','#2dd4bf'];
+
+  main.innerHTML = `
+    <div style="font-size:13px; color:var(--text2); margin-bottom:10px; line-height:1.6;">
+      🗺️ <strong style="color:var(--text);">Active Diagramming:</strong> Build a mind map or concept web. Add nodes and drag them around!
+    </div>
+    <div class="diagram-toolbar">
+      ${colors.map(c => `<div style="width:20px;height:20px;border-radius:50%;background:${c};cursor:pointer;border:2px solid ${c===diagramNodeColor?'#fff':'transparent'};transition:all 0.15s;" onclick="diagramNodeColor='${c}'; renderDiagram();"></div>`).join('')}
+      <div style="flex:1;"></div>
+      <button class="btn btn-ghost btn-sm" onclick="diagramNodes=[]; renderDiagram();">🗑</button>
+    </div>
+    <div style="display:flex; gap:8px; margin-bottom:10px; align-items:center;">
+      <input id="diagram-node-text" class="form-input" style="flex:1; padding:10px 14px; font-size:13px;" placeholder="Node label..." maxlength="30">
+      <button class="btn btn-primary btn-sm" onclick="addDiagramNode()">+ Add</button>
+    </div>
+    <div class="diagram-canvas" id="diagram-canvas">
+      <svg style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none;">
+        ${getDiagramEdges()}
+      </svg>
+      ${diagramNodes.map((n, i) => `
+        <div class="diagram-node" id="dn-${i}" style="left:${n.x}px; top:${n.y}px; background:${n.color}20; border-color:${n.color}; color:${n.color};"
+          onmousedown="startDragNode(${i}, event)" ontouchstart="startDragNode(${i}, event)">
+          ${n.label}
+        </div>
+      `).join('')}
+      ${diagramNodes.length === 0 ? `<div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--text3); font-size:13px;">Add nodes to start building your diagram</div>` : ''}
+    </div>
+    <div style="display:flex; gap:10px; margin-top:12px;">
+      <button class="btn btn-primary" style="flex:1;" onclick="saveDiagram()">✅ Save Diagram</button>
+    </div>
+  `;
+
+  const canvas = document.getElementById('diagram-canvas');
+  canvas.addEventListener('mousemove', dragNode);
+  canvas.addEventListener('mouseup', endDragNode);
+  canvas.addEventListener('touchmove', e => { e.preventDefault(); dragNode(e); }, {passive:false});
+  canvas.addEventListener('touchend', endDragNode);
+}
+
+function getDiagramEdges() {
+  if (diagramNodes.length < 2) return '';
+  const edges = [];
+  for (let i = 1; i < diagramNodes.length; i++) {
+    const from = diagramNodes[0];
+    const to = diagramNodes[i];
+    edges.push(`<line x1="${from.x+40}" y1="${from.y+18}" x2="${to.x+40}" y2="${to.y+18}" stroke="${from.color}40" stroke-width="2"/>`);
+  }
+  return edges.join('');
+}
+
+function addDiagramNode() {
+  const input = document.getElementById('diagram-node-text');
+  const label = input.value.trim();
+  if (!label) return;
+  const canvas = document.getElementById('diagram-canvas');
+  const w = canvas.offsetWidth || 300;
+  const h = canvas.offsetHeight || 300;
+  diagramNodes.push({
+    label,
+    x: 20 + Math.random() * (w - 120),
+    y: 20 + Math.random() * (h - 60),
+    color: diagramNodeColor
+  });
+  input.value = '';
+  renderDiagram();
+}
+
+function startDragNode(i, e) {
+  e.stopPropagation();
+  diagramDragIdx = i;
+  const touch = e.touches ? e.touches[0] : e;
+  const canvas = document.getElementById('diagram-canvas');
+  const rect = canvas.getBoundingClientRect();
+  diagramDragOffset = {
+    x: touch.clientX - rect.left - diagramNodes[i].x,
+    y: touch.clientY - rect.top - diagramNodes[i].y
+  };
+}
+
+function dragNode(e) {
+  if (diagramDragIdx === null) return;
+  const touch = e.touches ? e.touches[0] : e;
+  const canvas = document.getElementById('diagram-canvas');
+  const rect = canvas.getBoundingClientRect();
+  const x = touch.clientX - rect.left - diagramDragOffset.x;
+  const y = touch.clientY - rect.top - diagramDragOffset.y;
+  diagramNodes[diagramDragIdx].x = Math.max(0, Math.min(x, rect.width - 80));
+  diagramNodes[diagramDragIdx].y = Math.max(0, Math.min(y, rect.height - 40));
+
+  const nodeEl = document.getElementById('dn-' + diagramDragIdx);
+  if (nodeEl) {
+    nodeEl.style.left = diagramNodes[diagramDragIdx].x + 'px';
+    nodeEl.style.top = diagramNodes[diagramDragIdx].y + 'px';
+  }
+}
+
+function endDragNode() { diagramDragIdx = null; }
+
+function saveDiagram() {
+  state.diagramCount = (state.diagramCount || 0) + 1;
+  addXP(15);
+  logSession('diagram');
+  if (state.diagramCount >= 5) unlockAchievement('diagram_5');
+  saveState();
+  showToast('Diagram saved! +15 XP 🗺️');
+}
+
+// ═══════════════════════════════════════════════════════
+// SCHEDULE
+// ═══════════════════════════════════════════════════════
+
+function renderSchedule() {
+  renderScheduleGrid();
+  renderSessionsList();
+}
+
+function renderScheduleGrid() {
+  const grid = document.getElementById('schedule-grid');
+  const today = new Date();
+  const days = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+
+  grid.innerHTML = Array.from({length:7}, (_, i) => {
+    const d = new Date(today);
+    d.setDate(today.getDate() - today.getDay() + i);
+    const dateStr = d.toDateString();
+    const isToday = i === today.getDay();
+    const hasSession = state.sessions.some(s => new Date(s.date).toDateString() === dateStr);
+    const isRest = state.restDays.includes(dateStr);
+    return `
+      <div class="sched-day ${isToday?'today':''} ${hasSession?'has-session':''} ${isRest?'is-rest':''}">
+        <div class="sched-day-label">${days[i]}</div>
+        <div class="sched-day-num">${d.getDate()}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderSessionsList() {
+  const list = document.getElementById('sessions-list');
+  const techColors = {};
+  TECHNIQUES.forEach(t => techColors[t.id] = t.color);
+  const techIcons = {};
+  TECHNIQUES.forEach(t => techIcons[t.id] = t.icon);
+
+  const recent = [...state.sessions].reverse().slice(0, 8);
+
+  if (recent.length === 0) {
+    list.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text3); font-size:14px;">No sessions yet. Start studying! 📚</div>`;
+    return;
+  }
+
+  list.innerHTML = recent.map(s => `
+    <div class="session-item">
+      <div class="session-dot" style="background:${techColors[s.technique] || 'var(--primary)'}"></div>
+      <div class="session-info">
+        <h4>${techIcons[s.technique] || '📚'} ${TECHNIQUES.find(t=>t.id===s.technique)?.name || s.technique}</h4>
+        <p>${new Date(s.date).toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'})}</p>
+      </div>
+      <div class="session-time">${s.duration || '--'} min</div>
+    </div>
+  `).join('');
+}
+
+function showAddSession() {
+  const subject = prompt('Subject for this session:');
+  if (!subject) return;
+  const tech = prompt('Technique? (e.g. flashcards, blurting, feynman...):') || 'flashcards';
+  logSession(tech, subject, 30);
+  unlockAchievement('first_schedule');
+  renderSchedule();
+  showToast('Session added! 📅');
+}
+
+function toggleRestDay() {
+  const today = new Date().toDateString();
+  const idx = state.restDays.indexOf(today);
+  if (idx >= 0) {
+    state.restDays.splice(idx, 1);
+    showToast('Rest day removed');
+  } else {
+    state.restDays.push(today);
+    showToast('Rest day set 😴');
+    if (state.restDays.length >= 3) unlockAchievement('study_balance');
+  }
+  saveState();
+  renderSchedule();
+}
+
+function logSession(technique, subject, duration) {
+  if (!state.sessions) state.sessions = [];
+  state.sessions.push({ technique, subject: subject || '', date: new Date().toISOString(), duration: duration || 0 });
+
+  // Update streak
+  const today = new Date().toDateString();
+  if (state.lastStudyDate !== today) {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    if (state.lastStudyDate === yesterday.toDateString()) {
+      state.streak = (state.streak || 0) + 1;
+    } else {
+      state.streak = 1;
+    }
+    state.lastStudyDate = today;
+    if (state.streak >= 3) unlockAchievement('streak_3');
+    if (state.streak >= 7) unlockAchievement('streak_7');
+  }
+
+  // Study minutes
+  state.studyMinutes = (state.studyMinutes || 0) + (duration || 25);
+  if (state.studyMinutes >= 600) unlockAchievement('hours_10');
+  if (state.studyMinutes >= 3000) unlockAchievement('hours_50');
+
+  saveState();
+}
+
+// ═══════════════════════════════════════════════════════
+// POMODORO TIMER
+// ═══════════════════════════════════════════════════════
+
+function startTimer() {
+  if (timerRunning) {
+    clearInterval(timerInterval);
+    timerRunning = false;
+    document.getElementById('timer-start-btn').textContent = '▶ Resume';
+    return;
+  }
+  timerRunning = true;
+  document.getElementById('timer-start-btn').textContent = '⏸ Pause';
+
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    updateTimerDisplay();
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      pomodoroCount++;
+
+      if (timerPhase === 'focus') {
+        logSession(state.topTechnique || 'flashcards', '', 25);
+        addXP(25);
+        unlockAchievement('first_timer');
+        showToast('Focus session done! 🎉 +25 XP');
+        timerPhase = pomodoroCount % 4 === 0 ? 'longbreak' : 'shortbreak';
+        timerSeconds = timerPhase === 'longbreak' ? 15*60 : 5*60;
+      } else {
+        timerPhase = 'focus';
+        timerSeconds = 25*60;
+        showToast('Break over! Time to focus 💪');
+      }
+
+      document.getElementById('timer-phase').textContent =
+        timerPhase === 'focus' ? 'Focus Session' :
+        timerPhase === 'shortbreak' ? 'Short Break ☕' : 'Long Break 🛌';
+      document.getElementById('timer-start-btn').textContent = '▶ Start';
+      updateTimerDisplay();
+    }
+  }, 1000);
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+  timerPhase = 'focus';
+  timerSeconds = 25*60;
+  document.getElementById('timer-start-btn').textContent = '▶ Start';
+  document.getElementById('timer-phase').textContent = 'Focus Session';
+  updateTimerDisplay();
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(timerSeconds / 60);
+  const s = timerSeconds % 60;
+  const el = document.getElementById('timer-display');
+  if (el) el.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+}
+
+// ═══════════════════════════════════════════════════════
+// ACHIEVEMENTS
+// ═══════════════════════════════════════════════════════
+
+function unlockAchievement(key) {
+  if (!state.achievements) state.achievements = [];
+  if (state.achievements.includes(key)) return;
+  state.achievements.push(key);
+
+  const def = ACHIEVEMENTS_DEF.find(a => a.key === key);
+  if (!def) return;
+
+  addXP(key.includes('legendary') ? 100 : key.includes('epic') ? 50 : key.includes('rare') ? 25 : 10);
+
+  // Check legendary
+  const nonLegendary = ACHIEVEMENTS_DEF.filter(a => a.rarity !== 'legendary').map(a => a.key);
+  if (nonLegendary.every(k => state.achievements.includes(k))) {
+    setTimeout(() => unlockAchievement('all_achievements'), 500);
+  }
+
+  saveState();
+  showAchievementPopup(def.icon, def.name);
+}
+
+function showAchievementPopup(icon, name) {
+  const popup = document.getElementById('ach-popup');
+  document.getElementById('ach-pop-icon').textContent = icon;
+  document.getElementById('ach-pop-name').textContent = name;
+  popup.classList.add('show');
+  setTimeout(() => popup.classList.remove('show'), 3000);
+}
+
+function renderAchievements() {
+  if (!state.achievements) state.achievements = [];
+  const unlocked = state.achievements.length;
+  document.getElementById('ach-progress-label').textContent = `${unlocked}/${ACHIEVEMENTS_DEF.length} unlocked`;
+
+  const grid = document.getElementById('ach-grid');
+  grid.innerHTML = ACHIEVEMENTS_DEF.map(a => {
+    const isUnlocked = state.achievements.includes(a.key);
+    return `
+      <div class="ach-card ${isUnlocked ? 'unlocked' : 'locked'}">
+        ${isUnlocked && state.achievements.slice(-3).includes(a.key) ? '<div class="ach-new-badge">NEW!</div>' : ''}
+        <span class="ach-icon">${a.icon}</span>
+        <div class="ach-name">${a.name}</div>
+        <div class="ach-desc">${isUnlocked ? a.desc : '???'}</div>
+        <span class="ach-rarity rarity-${a.rarity}">${a.rarity}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// XP
+// ═══════════════════════════════════════════════════════
+
+function addXP(amount) {
+  state.xp = (state.xp || 0) + amount;
+  saveState();
+}
+
+// ═══════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════
+
+let toastTimeout = null;
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+
+function init() {
+  initSetup();
+
+  // Try load existing state
+  const loaded = loadState();
+  if (loaded && state.profile && state.quizScores && Object.keys(state.quizScores).length > 0) {
+    renderHome();
+    goTo('screen-home');
+  }
+}
+
+init();
+</script>
+</body>
+</html>
